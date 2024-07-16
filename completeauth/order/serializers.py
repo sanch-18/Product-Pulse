@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from datetime import datetime
 
 from .models import Order, OrderItem
 from Product.models import Product
@@ -79,9 +80,3 @@ class MyCartSerializer(serializers.ModelSerializer):
             
         return order
     
-class DeleteOrderSerializer(serializers.Serializer):
-    class Meta:
-        model = Order
-        fields = (
-            "id",
-        )
