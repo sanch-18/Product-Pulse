@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from datetime import datetime
+from .email_draft import email_draft_create
+from accounts.utils import Util
 
 from .models import Order, OrderItem
 from Product.models import Product
@@ -61,6 +62,8 @@ class MyCartSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         amt = 0
 
+        items = ""
+
         for item_data in items_data:
             try:
                 product = Product.objects.get(id=item_data['product'].id)
@@ -68,15 +71,28 @@ class MyCartSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"Product with id {item_data['product']} does not exist")
 
             price = product.price
+            name = product.name
+            items = items + name + ", "
             quantity = item_data['quantity']
             amt += price * quantity
 
+        items = items[0:-2]
         validated_data['amount'] = amt
         validated_data['user'] = user
         order = Order.objects.create(**validated_data)
 
+
         for item_data in items_data:
             OrderItem.objects.create(order=order, **item_data)
-            
+        
+        body = email_draft_create(validated_data['first_name']+' '+validated_data['last_name'], items, amt)
+
+        data = {
+            'subject': 'Order Confirmation - Your Order Is Being Processed 🛒',
+            'body': body,
+            'to_email': user.email
+        }
+        Util.send_email(data)
+
         return order
     

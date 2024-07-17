@@ -5,8 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import MyOrderSerializer, MyCartSerializer
 from .models import Order
 from rest_framework import serializers
-from datetime import datetime
 from django.utils import timezone
+from accounts.utils import Util
+from .email_draft import email_draft_delete
 
 class OrdersList(APIView):
     permission_classes = [IsAuthenticated]
@@ -27,6 +28,7 @@ class OrderCart(APIView):
         if serializer.is_valid(raise_exception=True):
             try:
                 order = serializer.save()
+                
                 return Response({
                     'msg': 'Your Order has been placed'
                 }, status=status.HTTP_200_OK)
@@ -51,6 +53,7 @@ class DeleteCart(APIView):
         if order.delivered_status:
             return Response({'msg': "Sorry, can't cancel the order as it has been delivered!"})
 
+        amt = order.amount
         curr_time = timezone.now()
         # print(curr_time-order.created_at)
         time_diff = curr_time - order.created_at
@@ -61,4 +64,13 @@ class DeleteCart(APIView):
             return Response({'msg': "Sorry, can't cancel the order as it has been more than 60 minutes since ordering!"})
 
         order.delete()
+
+        body = email_draft_delete(order_id, order.first_name+' '+order.last_name, amt)
+
+        data = {
+            'subject': 'Order Deletion - Your Order Has been Deleted 🛒',
+            'body': body,
+            'to_email': request.user.email
+        }
+        Util.send_email(data)
         return Response({'msg': "Your order has been successfully cancelled!"})
