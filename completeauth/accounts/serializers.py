@@ -4,7 +4,8 @@ from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeErr
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from .utils import Util
-
+from django.utils import timezone
+from datetime import timedelta
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(
@@ -26,6 +27,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validate_data):
+        
         return User.objects.create_user(**validate_data)
 
 

@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'Product',
     'order',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -136,6 +137,8 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
 # Django cors

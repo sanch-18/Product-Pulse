@@ -43,6 +43,10 @@ class User(AbstractBaseUser):
     )
     name = models.CharField(max_length=200)
     tc = models.BooleanField()
+    mobile_number = models.CharField(max_length=15, default="")
+    otp = models.IntegerField(null=True)
+
+    is_verified = models.BooleanField(default=False)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
