@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'Product',
     'order',
+    'DeliveryMan',
     'rest_framework_simplejwt.token_blacklist',
 ]
 
@@ -78,6 +79,16 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'railway',
+#         'USER': 'postgres',
+#         'PASSWORD': 'EWkvqunniRyehsskImIzlpCZYJfUXQWJ',
+#         'HOST': 'postgres.railway.internal',
+#         'PORT': '5432',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

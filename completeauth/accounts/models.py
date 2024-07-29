@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, name, tc, password=None, password2=None):
+    def create_user(self, email, name, tc, phone ,password=None, password2=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -14,13 +14,14 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
             name=name,
             tc=tc,
+            phone=phone,
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, name, tc, password=None):
+    def create_superuser(self, email, name, tc, phone, password=None):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
@@ -30,6 +31,7 @@ class UserManager(BaseUserManager):
             password=password,
             name=name,
             tc=tc,
+            phone=phone, 
         )
         user.is_admin = True
         user.save(using=self._db)
@@ -43,10 +45,11 @@ class User(AbstractBaseUser):
     )
     name = models.CharField(max_length=200)
     tc = models.BooleanField()
-    mobile_number = models.CharField(max_length=15, default="")
     otp = models.IntegerField(null=True)
+    phone = models.CharField(max_length=12)
 
     is_verified = models.BooleanField(default=False)
+    isDeliveryMan = models.BooleanField(default=False)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -57,7 +60,7 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["name", "tc"]
+    REQUIRED_FIELDS = ["name", "tc", "phone"]
 
     def __str__(self):
         return self.email
@@ -78,3 +81,11 @@ class User(AbstractBaseUser):
         # Simplest possible answer: All admins are staff
         return self.is_admin
 
+class UserDetails(models.Model):
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+    phone = models.CharField(max_length=12)
+    user = models.ForeignKey(User, related_name='User', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name    

@@ -8,9 +8,10 @@ from rest_framework import serializers
 from django.utils import timezone
 from accounts.utils import Util
 from .email_draft import email_draft_delete
+from .permissions import IsDeliveryman
 
 class OrdersList(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsDeliveryman]
 
     def get(self, request):
         orders = Order.objects.filter(user=request.user)
@@ -19,7 +20,7 @@ class OrdersList(APIView):
 
 
 class OrderCart(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsDeliveryman]
 
     def post(self, request):
         serializer = MyCartSerializer(
@@ -40,7 +41,7 @@ class OrderCart(APIView):
 
 
 class DeleteCart(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsDeliveryman]
 
     def delete(self, request):
         order_id = request.data.get('id')

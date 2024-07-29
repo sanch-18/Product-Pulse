@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, UserDetails
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -13,7 +13,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'name', 'tc', 'password', 'password2']
+        fields = ['email', 'name', 'tc', 'phone','password', 'password2']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -27,7 +27,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validate_data):
-        
         return User.objects.create_user(**validate_data)
 
 

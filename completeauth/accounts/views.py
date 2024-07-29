@@ -10,7 +10,7 @@ import random
 from .utils import Util
 from datetime import timedelta
 from django.utils import timezone
-from .models import User
+from .models import User, UserDetails
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -31,6 +31,8 @@ class UserRegistrationView(APIView):
                 is_verified = user.is_verified
                 if (not is_verified) and (timezone.now() > user.created_at + timedelta(minutes=10)):
                     user.delete()
+                    x = UserDetails.objects.get(user=user)
+                    x.delete()
                 else :
                     return Response("User email account already exists can't create one!")
         except:
@@ -38,6 +40,8 @@ class UserRegistrationView(APIView):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
+            member = UserDetails(name=request.data.get('name'), email=request.data.get('email'), phone=request.data.get('phone'), user=user)
+            member.save()
             try:
                 otp = str(random.randint(100000, 999999))
                 user.otp = otp
