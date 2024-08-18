@@ -5,6 +5,7 @@ from accounts.utils import Util
 from .models import Order, OrderItem
 from Product.models import Product
 from Product.serializers import ProductSerializer
+from DeliveryMan.models import DeliveryMan
 
 class MyOrderItemSerializer(serializers.ModelSerializer):    
     product = ProductSerializer()
@@ -16,8 +17,15 @@ class MyOrderItemSerializer(serializers.ModelSerializer):
             "quantity",
         )
 
+class DeliveryManSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliveryMan
+        fields = ("name", "phone")  # Fields you want to display
+
+
 class MyOrderSerializer(serializers.ModelSerializer):
     items = MyOrderItemSerializer(many=True)
+    delivery_man = DeliveryManSerializer()
 
     class Meta:
         model = Order
@@ -31,6 +39,7 @@ class MyOrderSerializer(serializers.ModelSerializer):
             "amount",
             "created_at",
             "delivered_status",
+            "delivery_man",
             "items",
         )
 
@@ -54,6 +63,7 @@ class MyCartSerializer(serializers.ModelSerializer):
             "address",
             "pincode",
             "city",
+            "preferred_date",
             "items",
         )
 
