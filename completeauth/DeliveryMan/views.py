@@ -18,15 +18,23 @@ class UserProfileView(APIView):
         serializer = UserProfileSerializer(delivery_man, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+class AllOrdersDelivery(APIView):
+    permission_classes = [IsAuthenticated, IsNotDeliveryMan]
+
+    def get(self, request, format=None):
+        delivery_man_var = DeliveryMan.objects.get(user = request.user)
+        orders = Order.objects.filter(delivery_man=delivery_man_var)
+        serializer = DeliveryOrderSerializer(orders, many=True)
+        return Response(serializer.data)
+
+
 class OrdersDelivery(APIView):
     permission_classes = [IsAuthenticated, IsNotDeliveryMan]
 
     def get(self, request, format=None):
-        orders = Order.objects.filter(DeliveryMan=request.user)
+        delivery_man_var = DeliveryMan.objects.get(user = request.user)
+        orders = Order.objects.filter(delivery_man=delivery_man_var, delivered_status=False)
         serializer = DeliveryOrderSerializer(orders, many=True)
         return Response(serializer.data)
-
-class OrderDelivered(APIView):
-    permission_classes = [IsAuthenticated, IsNotDeliveryMan]
 
 
